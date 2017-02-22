@@ -1,6 +1,11 @@
-#include"matrix_read.c"
+typedef struct mtr
+{
+	int rows;
+	int columns;
+	double ** values;
+}matrix;
 
-typedef struct mtr matrix;
+//typedef struct mtr matrix;
 
 matrix read_matrix(char * file_name);
 
