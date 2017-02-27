@@ -1,11 +1,11 @@
-#include "matr_functions.h"
+#include "matr_functions_1d.h"
 
 int main(int argc, char *argv[])
 {
-	matrix mat = read_matrix(argv[1]);
+	matrix_1d mat = read_matrix_1d(argv[1]);
 
 	//mat = read_matrix("data.txt");
-	write_matrix(mat, "stdout");
+	write_matrix_1d(mat, "stdout");
 
 	return 0;
 }
