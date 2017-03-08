@@ -1,5 +1,4 @@
 #include "matr_functions_1d.h"
-#include "gauss_functions.c"
 
 // Struct to be able to return 2 numbers (i.e. a pair, or a position).
 typedef struct pr
@@ -10,9 +9,9 @@ typedef struct pr
 
 /*
 *   This function gives back the position of the largest absolute value
-*   in the matrix.
+*   in the submatrix (given by the start argument) of a matrix.
 */
-pair get_largest(matrix_1d matrix);
+pair get_largest(matrix_1d matrix, int start);
 
 /*
 *   Switches 2 rows in a matrix.

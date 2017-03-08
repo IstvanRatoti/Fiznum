@@ -1,7 +1,8 @@
-#include "matr_functions_1d.h"
-#include "gauss_test.c"
+#include "gauss_test.h"
 
 int main(int argc, char *argv[])
 {
+    test_functions();
 
+    return 0;
 }
