@@ -23,12 +23,12 @@ void write_matrix_1d(matrix_1d matr, char * file_name)
 
 	if(matr.rows == -1)		// Checking for reading error.
 	{
-		fprintf(stderr, "Matrix is empty.\nReason: reading error.");
+		fprintf(stderr, "Matrix is empty.\nReason: reading error.\n");
 		return;
 	}
 	else if(matr.columns == -1)		// Checking for matrix multiplication error.
 	{
-		fprintf(stderr, "Matrix is empty.\nReason: multiplication error.");
+		fprintf(stderr, "Matrix is empty.\nReason: multiplication error.\n");
 		return;
 	}
 
@@ -42,7 +42,7 @@ void write_matrix_1d(matrix_1d matr, char * file_name)
 
 	if(file == NULL)
 	{
-		perror("Error opening file.");
+		perror("Error opening file.\n");
 		return;
 	}
 
@@ -51,17 +51,18 @@ void write_matrix_1d(matrix_1d matr, char * file_name)
 		for(j=0;j<matr.columns;j++)
 		{
 		    value = get_value(i, j, matr);
-			fprintf(file, "%5.8f", value);
+			fprintf(file, "%5.8f\t", value);
 
-			if((j+1)==matr.columns)
+			/*if((j+1)==matr.columns)
 			{
 				if((i+1)==matr.rows)
 					goto END;			// Not pretty, but we use it to not write a \n before EOF.
 				fprintf(file, "\n");
 			}
 			else
-				fprintf(file, "\t");
+				fprintf(file, "\t");*/
 		}
+		fprintf(file, "\n");
 	}
 
 END:
@@ -83,7 +84,7 @@ matrix_1d read_matrix_1d(char * file_name)
 
 	if(file == NULL)
 	{
-		perror("Error opening file.");
+		perror("Error opening file.\n");
 		matr.rows = -1;					// This value is useful to determine later if the reading was successful.
 		return matr;
 	}
@@ -149,7 +150,7 @@ matrix_1d read_matrix_1d(char * file_name)
 		else
         {
 			ch = (char )c;
-			if(ch == ',')
+			if(ch == ',')   // Little code to handle colons.
                 ch = '.';
 			strncat(str, &ch, 1);		// If no "special" characters were found, its probably a "part" of a number.
         }
