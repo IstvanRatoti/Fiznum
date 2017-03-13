@@ -3,6 +3,48 @@
 #include "gauss_functions.h"
 #include "gauss_test.h"
 
+int get_largest_in_row_test(void)
+{
+    int success = 1;
+    int value = 0;
+
+    matrix_1d mat = read_matrix_1d("test6.dat");
+
+    //write_matrix_1d(mat, "stdout");   // Debug code.
+
+    // Test invalid row.
+    value = (int )get_largest_in_row(mat, 2);
+    if(-1==value)
+        success &= 1;
+    else
+    {
+        fprintf(stderr, "Invalid row number not detected!\n");
+        success &= 0;
+    }
+
+    // Test largest with a positive integer.
+    value = (int ) get_largest_in_row(mat, 0);
+    if(3==value)
+        success &= 1;
+    else
+    {
+        fprintf(stderr, "Function did not return the expected value!\n");
+        success &= 0;
+    }
+
+    // Test largest with a negative double.
+    value = (int ) get_largest_in_row(mat, 1);
+    if(-124==value)
+        success &= 1;
+    else
+    {
+        fprintf(stderr, "Function did not return the expected value!\n");
+        success &= 0;
+    }
+
+    return success;
+}
+
 int get_largest_test(void)
 {
     int success = 1;
@@ -370,22 +412,25 @@ int sub_row_test(void)
 
 void test_functions(void)
 {
-    fprintf(stderr, "Testing functions...\n");
+    fprintf(stderr, "******\t\tTesting functions...\t\t******\n\n");
+
+    if(get_largest_in_row_test())
+        fprintf(stderr, "***\tFunction get_largest_in_row is OK.\n");
 
     if(get_largest_test())
-        fprintf(stderr, "Function get_largest is OK.\n");
+        fprintf(stderr, "***\tFunction get_largest is OK.\n");
 
     if(switch_rows_test())
-        fprintf(stderr, "Function switch_rows is OK.\n");
+        fprintf(stderr, "***\tFunction switch_rows is OK.\n");
 
     if(switch_columns_test())
-        fprintf(stderr, "Function switch_columns is OK.\n");
+        fprintf(stderr, "***\tFunction switch_columns is OK.\n");
 
     if(mult_row_test())
-        fprintf(stderr, "Function mult_row is OK.\n");
+        fprintf(stderr, "***\tFunction mult_row is OK.\n");
 
     if(sub_row_test())
-        fprintf(stderr, "Function sub_row is OK.\n");
+        fprintf(stderr, "***\tFunction sub_row is OK.\n");
 
-    fprintf(stderr, "Function tests complete.\n");
+    fprintf(stderr, "\n******\t\tFunction tests complete.\t******\n\n");
 }

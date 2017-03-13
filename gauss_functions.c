@@ -1,16 +1,41 @@
 #include<math.h>
 #include<stdio.h>
+#include<stdlib.h>
 
 #include "gauss_functions.h"
 
 /*
+*   This function checks a given row in a matrix, and returns the biggest absolute value there.
+*/
+double get_largest_in_row(matrix_1d matrix, int row)
+{
+    int i;
+    double temp, largest = 0;
+
+    // Check for invalid row.
+    if(row>=matrix.rows)                                                                                // Test with invalid row.       Done
+        return -1;
+
+    // Loops through the elements of the row and searches for the largest element.
+    for(i=0;i<matrix.columns;i++)                                                                       // Test with:
+    {                                                                                                   //          - positive integer  Done
+        temp = get_value(row, i, matrix);                                                               //          - negative double   Done
+
+        if(fabs(temp)>fabs(largest))
+            largest = temp;
+    }
+
+    return largest;
+}
+
+/*
 *   This function gives back the position of the largest absolute value
-*   in the submatrix (given by the start argument) of a matrix.
+*   in the sub-matrix (given by the start argument) of a matrix.
 */
 pair get_largest(matrix_1d matrix, int start)
 {
     int i, j;
-    double largest = 0;
+    double largest = get_value(start, start, matrix);   // The largest element might be the one we have.
     double temp;
     pair pos;       // Position of the largest element.
     pos.num1 = 0;
@@ -41,7 +66,7 @@ pair get_largest(matrix_1d matrix, int start)
         }
 
         // This code checks for a singular matrix.
-        if((i == start)&&(0 == largest))                                                                // Test for singularity!                            Done
+        if((i == start)&&(fabs(largest) < 1.0e-308))                                                    // Test for singularity!                            Done
         {
             //fprintf(stderr, "The matrix is singular!\n");     Move up to the eliminator.
             pos.num1 = -1;
@@ -52,7 +77,7 @@ pair get_largest(matrix_1d matrix, int start)
 
     // Check for numerical singularity, and write a warning.
     if(fabs(largest) < 1e-10)                                                                           // Test for numerical singularity? How?
-        fprintf(stderr, "*** Warning! ***\nPossible numerical singularity!\n");
+        fprintf(stderr, "Warning! Possible numerical singularity!\n");
 
     return pos;
 }
@@ -156,3 +181,168 @@ int sub_row(int row1, int row2, matrix_1d matrix)
 
     return 1;
 }
+
+/*
+*   The complete eliminator function. Requires two matrices as arguments. The result will be in
+*   the second matrix. The first needs to be a square matrix, the second either a vector or an
+*   identity matrix. Returns "true" if the operation was successful.
+*/
+int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
+{
+    int i, j, switch_count = 0;
+    double temp;
+    pair tmp_pair;
+    pair * switches;
+
+    // Check if we had any problem reading the matrix.
+    if((-1==matrix1.rows)||(-1==matrix2.rows))                                                              // Test with an unread matrix.
+    {
+        matrix2.rows = -1;
+        return 0;
+    }
+
+    // Check if we have a square matrix.
+    if(matrix1.rows != matrix2.columns)                                                                     // Test with a non-square matrix.
+    {
+        matrix2.columns = -1;
+
+        return 0;
+    }
+
+    printf("\n\n\n");
+    printf("***\tMatrices before eliminator\t***\n");
+    printf("***\tFirst Matrix\t***\n");
+    write_matrix_1d(matrix1, "stdout"); // Debug code.
+    printf("***\tSecond Matrix\t***\n");
+    write_matrix_1d(matrix2, "stdout");
+    printf("\n\n\n");
+
+    // Now we zero out the lower triangle.
+    for(i=0;i<matrix1.rows;i++)
+    {
+        printf("\n\n\n");
+        printf("***\tTriangle before zeroing #%d\t***\n", i+1);
+        printf("***\tFirst Matrix\t***\n");
+        write_matrix_1d(matrix1, "stdout"); // Debug code.
+        printf("***\tSecond Matrix\t***\n");
+        write_matrix_1d(matrix2, "stdout");
+        printf("\n\n\n");
+        getchar();
+
+        // First we want to "normalize" the matrix/sub-matrix.
+        for(j=i;j<matrix1.rows;j++)
+        {
+            temp = get_largest_in_row(matrix1, j);
+
+            printf("Largest absolute value in normalization: %e", temp);    // Debug code.
+            getchar();
+
+            if(fabs(temp) < 1e-308)     // Check for singularity in normalization.
+            {
+                fprintf(stderr, "The matrix is singular!\n");
+                return 0;
+            }
+
+            temp = 1.0 / temp;
+
+            if(!mult_row(temp, j, matrix1))     // Try to divide in the first matrix.
+            {
+                fprintf(stderr, "There was an error in row multiplication!\n");
+                matrix2.columns = -1;
+                return 0;
+            }
+            if(!mult_row(temp, j, matrix2))     // And in the second matrix.
+            {
+                fprintf(stderr, "There was an error in row multiplication!\n");
+                matrix2.columns = -1;
+                return 0;
+            }
+        }
+
+        printf("\n\n\n");
+        printf("***\tMatrices after normalization\t***\n");
+        printf("***\tFirst Matrix\t***\n");
+        write_matrix_1d(matrix1, "stdout"); // Debug code.
+        printf("***\tSecond Matrix\t***\n");
+        write_matrix_1d(matrix2, "stdout");
+        printf("\n\n\n");
+        getchar();
+
+        // We need to find the largest element in the matrix.
+        tmp_pair = get_largest(matrix1, i);
+
+        printf("Largest absolute value: %e", get_value(tmp_pair.num1, tmp_pair.num2, matrix1)); // Debug code.
+        getchar();
+
+        if(-1==tmp_pair.num1)       // Check for singularity.
+        {
+            fprintf(stderr, "The matrix is singular!\n");
+            return 0;
+        }
+
+        if(tmp_pair.num1!=i)  // If the largest element is in another row
+        {               // switch the current row with that one.
+            switch_rows(tmp_pair.num1, i, matrix1);
+            switch_rows(tmp_pair.num1, i, matrix2);   // The other matrix too.
+
+            printf("Switching row %d with row %d.\n", tmp_pair.num1, tmp_pair.num2);    // Debug code.
+            getchar();
+        }
+
+        if(tmp_pair.num2!=i)  // If the largest element is in another column
+        {               // switch the current column with that one.
+            tmp_pair = switch_columns(tmp_pair.num2, i, matrix1);
+            if(1!=matrix2.columns) // If its an identity, switch those columns too.
+                switch_columns(tmp_pair.num2, i, matrix1);    // Note: Do I need this?
+
+            // Register the column switches in switches and switch_count.
+            if(0==switch_count)     // Store the first switch.
+            {
+                switches = (pair *)calloc(1, sizeof(pair));
+                switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
+            }
+            else                    // Store the rest.
+            {
+                switches = (pair *)calloc((switch_count+1), sizeof(pair));
+                switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
+            }
+
+            printf("Switching column %d with column %d.\n", tmp_pair.num1, tmp_pair.num2);  // Debug code.
+            getchar();
+        }
+
+        printf("\n\n\n");
+        printf("***\tTriangle after switching #%d\t***\n", i+1);
+        printf("***\tFirst Matrix\t***\n");
+        write_matrix_1d(matrix1, "stdout"); // Debug code.
+        printf("***\tSecond Matrix\t***\n");
+        write_matrix_1d(matrix2, "stdout");
+        printf("\n\n\n");
+        getchar();
+
+        // Zero out the elements under our current one.
+        for(j=i+1;j<matrix1.rows;j++)
+        {
+            temp = get_value(i, i, matrix1);    // Set temp to our "eliminator" value.
+            temp /= get_value(j, i, matrix1);   // Divide temp with the value of the element we want to zero out.
+
+            mult_row(temp, j, matrix1);
+            sub_row(j, i, matrix1);         // Zero out matrix1 row.
+
+            mult_row(temp, j, matrix2);
+            sub_row(j, i, matrix2);         // Zero out matrix2 row.
+        }
+
+        printf("\n\n\n");
+        printf("***\tTriangle after zeroing #%d\t***\n", i+1);
+        printf("***\tFirst Matrix\t***\n");
+        write_matrix_1d(matrix1, "stdout"); // Debug code.
+        printf("***\tSecond Matrix\t***\n");
+        write_matrix_1d(matrix2, "stdout");
+        printf("\n\n\n");
+        getchar();
+    }
+
+    return 1;
+}
+
