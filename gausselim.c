@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 #include "gauss_test.h"
 #include "gauss_functions.h"
 
@@ -8,7 +10,13 @@ int main(int argc, char *argv[])
     matrix_1d matrix1 = read_matrix_1d("singular2.dat");
     matrix_1d matrix2 = read_matrix_1d("identity.dat");
 
-    gauss_eliminator(matrix1, matrix2);
+    write_matrix_1d(matrix1, "stdout");
+    write_matrix_1d(matrix2, "stdout");
+
+    if(!gauss_eliminator(matrix1, matrix2))
+    {
+        fprintf(stderr, "The eliminator encountered an error!\n");
+    }
 
     return 0;
 }

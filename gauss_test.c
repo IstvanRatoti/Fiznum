@@ -333,7 +333,7 @@ int sub_row_test(void)
     //write_matrix_1d(mat, "stdout");     // Debug code.
 
     // Test invalid rows.
-    if(!sub_row(5, 10, mat))
+    if(!sub_row(5, 10, mat, 1))
         success &= 1;
     else
     {
@@ -342,7 +342,7 @@ int sub_row_test(void)
     }
 
     // Test subtraction with positive integers.
-    if(sub_row(0, 1, mat))
+    if(sub_row(0, 1, mat, 1))
     {
         for(i=0;i<mat.columns;i++)
         {
@@ -364,7 +364,7 @@ int sub_row_test(void)
     //write_matrix_1d(mat, "stdout");     // Debug code.
 
     // Test subtraction with negative integers(addition).
-    if(sub_row(0, 2, mat))
+    if(sub_row(0, 2, mat, 1))
     {
         for(i=0;i<mat.columns;i++)
         {
@@ -386,7 +386,7 @@ int sub_row_test(void)
     //write_matrix_1d(mat, "stdout");     // Debug code.
 
     // Test subtraction with doubles.
-    if(sub_row(3, 4, mat))
+    if(sub_row(3, 4, mat, 1))
     {
         for(i=0;i<mat.columns;i++)
         {
@@ -406,6 +406,53 @@ int sub_row_test(void)
     }
 
     //write_matrix_1d(mat, "stdout");     // Debug code.
+    //getchar();
+
+    // Test with a positive integer multiplier.
+    if(sub_row(2, 1, mat, 2))
+    {
+        for(i=0;i<mat.columns;i++)
+        {
+            temp = (int )get_value(2, i, mat);
+            if(!(-3==temp))     // temp should be equal to -1.
+            {
+                fprintf(stderr, "Value did not match the expected!\n");
+                success &= 0;
+                break;
+            }
+        }
+    }
+    else    // If for some reason, the function didn't return 1.
+    {
+        fprintf(stderr, "Function failed to return expected value!\n");
+        success &= 0;
+    }
+
+    //write_matrix_1d(mat, "stdout");     // Debug code.
+    //getchar();
+
+    // Test with a negative double multiplier
+    if(sub_row(3, 4, mat, (-1.0/2.5)))
+    {
+        for(i=0;i<mat.columns;i++)
+        {
+            temp = (int )get_value(3, i, mat);
+            if(!(0==temp))     // temp should be equal to -1.
+            {
+                fprintf(stderr, "Value did not match the expected!\n");
+                success &= 0;
+                break;
+            }
+        }
+    }
+    else    // If for some reason, the function didn't return 1.
+    {
+        fprintf(stderr, "Function failed to return expected value!\n");
+        success &= 0;
+    }
+
+    //write_matrix_1d(mat, "stdout");     // Debug code.
+    //getchar();
 
     return success;
 }

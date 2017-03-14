@@ -36,7 +36,7 @@ int mult_row(double mult, int row, matrix_1d matrix);
 /*
 *   Subtracts the second row from the first row in a matrix, returns "true" if the operation succeeded.
 */
-int sub_row(int row1, int row2, matrix_1d matrix);
+int sub_row(int row1, int row2, matrix_1d matrix, double mult);
 
 /*
 *   The complete eliminator function. Requires two matrices as arguments and returns the result
