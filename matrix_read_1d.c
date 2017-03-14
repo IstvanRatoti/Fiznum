@@ -65,7 +65,7 @@ void write_matrix_1d(matrix_1d matr, char * file_name)
 		fprintf(file, "\n");
 	}
 
-END:
+//END:
 	if(file != stdout)		// Dont think we want to close stdout, do we?
 		fclose(file);
 }
