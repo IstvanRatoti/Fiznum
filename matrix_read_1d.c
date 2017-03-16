@@ -84,7 +84,7 @@ matrix_1d read_matrix_1d(char * file_name)
 
 	if(file == NULL)
 	{
-		perror("Error opening file.\n");
+		fprintf(stderr, "Error opening file.\n");
 		matr.rows = -1;					// This value is useful to determine later if the reading was successful.
 		return matr;
 	}
@@ -161,4 +161,34 @@ matrix_1d read_matrix_1d(char * file_name)
 	fclose(file);
 
 	return matr;
+}
+
+matrix_1d create_identity(int dimensions)
+{
+    int i=0, j=0;
+
+    matrix_1d result;
+    result.columns = dimensions;
+    result.rows = dimensions;
+    result.values = (double *)calloc(dimensions*dimensions, sizeof(double));
+
+    if(-1==dimensions)
+    {
+        fprintf(stderr, "Cannot create identity, because file was not properly read!\n");
+
+        return result;
+    }
+
+    for(i=0;i<dimensions;i++)
+    {
+        for(j=0;j<dimensions;j++)
+        {
+            if(i==j)
+                set_value(i, j, result, 1);
+            else
+                set_value(i, j, result, 0);
+        }
+    }
+
+    return result;
 }

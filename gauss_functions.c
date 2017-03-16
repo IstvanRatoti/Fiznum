@@ -35,11 +35,11 @@ double get_largest_in_row(matrix_1d matrix, int row)
 pair get_largest(matrix_1d matrix, int start)
 {
     int i, j;
-    double largest = get_value(start, start, matrix);   // The largest element might be the one we have.
+    double largest = 0;
     double temp;
     pair pos;       // Position of the largest element.
-    pos.num1 = start;
-    pos.num2 = start;
+    pos.num1 = 0;
+    pos.num2 = 0;
 
     // Start position can't be larger than the matrix size.
     if(start >= matrix.rows)                                                                            // Test for wrong starting position.                Done
@@ -177,8 +177,8 @@ int sub_row(int row1, int row2, matrix_1d matrix, double mult)
     {                                                                                                       //                              - positive integers             Done
         temp = get_value(row1, i, matrix) - mult*get_value(row2, i, matrix);                                //                              - negative integers (addition)  Done
         set_value(row1, i, matrix, temp);                                                                   //                              - doubles                       Done
-    }                                                                                                       //                              - integer multiplier
-                                                                                                            //                              - negative double multiplier
+    }                                                                                                       //                              - integer multiplier            Done
+                                                                                                            //                              - negative double multiplier    Done
     return 1;
 }
 
@@ -199,6 +199,7 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
     {
         fprintf(stderr, "Unread matrix error!\n");
         matrix2.rows = -1;
+        matrix2.columns = -1;
 
         return 0;
     }
@@ -212,26 +213,26 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
         return 0;
     }
 
-    printf("\n\n\n");
+    /*printf("\n\n\n");
     printf("***\tMatrices before eliminator\t***\n");
     printf("***\tFirst Matrix\t***\n");
     write_matrix_1d(matrix1, "stdout"); // Debug code.
     printf("***\tSecond Matrix\t***\n");
     write_matrix_1d(matrix2, "stdout");
     printf("\n\n\n");
-    getchar();
+    getchar();*/
 
     // Now we zero out the lower triangle.
     for(i=0;i<matrix1.rows;i++)
     {
-        printf("\n\n\n");
+        /*printf("\n\n\n");
         printf("***\tTriangle before zeroing #%d\t***\n", i+1);
         printf("***\tFirst Matrix\t***\n");
         write_matrix_1d(matrix1, "stdout"); // Debug code.
         printf("***\tSecond Matrix\t***\n");
         write_matrix_1d(matrix2, "stdout");
         printf("\n\n\n");
-        getchar();
+        getchar();*/
 
         // First we want to "normalize" the matrix/sub-matrix.
         for(j=i;j<matrix1.rows;j++)
@@ -263,22 +264,22 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
             }
         }
 
-        printf("\n\n\n");
+        /*printf("\n\n\n");
         printf("***\tMatrices after normalization\t***\n");
         printf("***\tFirst Matrix\t***\n");
         write_matrix_1d(matrix1, "stdout"); // Debug code.
         printf("***\tSecond Matrix\t***\n");
         write_matrix_1d(matrix2, "stdout");
         printf("\n\n\n");
-        getchar();
+        getchar();*/
 
         // We need to find the largest element in the matrix.
         tmp_pair = get_largest(matrix1, i);
 
         //printf("Largest absolute value: %e", get_value(tmp_pair.num1, tmp_pair.num2, matrix1)); // Debug code.
-        printf("At loop: %d\n", i);
-        printf("Largest at row: %d column: %d\n", tmp_pair.num1, tmp_pair.num2);
-        getchar();
+        //printf("At loop: %d\n", i);
+        //printf("Largest at row: %d column: %d\n", tmp_pair.num1, tmp_pair.num2);
+        //getchar();
 
         if(-1==tmp_pair.num1)       // Check for singularity.
         {
@@ -291,15 +292,19 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
             switch_rows(tmp_pair.num1, i, matrix1);
             switch_rows(tmp_pair.num1, i, matrix2);   // The other matrix too.
 
-            printf("Switching row %d with row %d.\n", tmp_pair.num1, i);    // Debug code.
-            getchar();
+            //printf("Switching row %d with row %d.\n", tmp_pair.num1, i);    // Debug code.
+            //getchar();
         }
 
         if(tmp_pair.num2!=i)  // If the largest element is in another column
         {               // switch the current column with that one.
+            //printf("Switching column %d with column %d.\n", tmp_pair.num2, i);  // Debug code.
+            //getchar();
+
             tmp_pair = switch_columns(tmp_pair.num2, i, matrix1);
-            if(1!=matrix2.columns) // If its an identity, switch those columns too.
-                switch_columns(tmp_pair.num2, i, matrix1);    // Note: Do I need this?
+            /*if(1!=matrix2.columns) // If its an identity, switch those columns too.
+                tmp_pair = switch_columns(tmp_pair.num2, i, matrix1);*/
+                // Note: Don't think we need to bother about identities.
 
             // Register the column switches in switches and switch_count.
             if(0==switch_count)     // Store the first switch.
@@ -313,8 +318,7 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
                 switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
             }
 
-            printf("Switching column %d with column %d.\n", tmp_pair.num2, i);  // Debug code.
-            getchar();
+            //printf("The new pair: %d %d", switches[switch_count-1].num1, switches[switch_count-1].num2);  Debug code.
         }
 
         /*printf("\n\n\n");
@@ -329,58 +333,6 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
         // Zero out the elements under our current one.
         for(j=i+1;j<matrix1.rows;j++)
         {
-            // We need to find the largest element in the matrix.
-            /*tmp_pair = get_largest(matrix1, i);
-
-            //printf("Largest absolute value: %e", get_value(tmp_pair.num1, tmp_pair.num2, matrix1)); // Debug code.
-            //getchar();
-
-            if(-1==tmp_pair.num1)       // Check for singularity.
-            {
-                fprintf(stderr, "The matrix is singular!\n");
-                return 0;
-            }
-
-            if(tmp_pair.num1!=i)    // If the largest element is in another row
-            {                       // switch the current row with that one.
-                switch_rows(tmp_pair.num1, i, matrix1);
-                switch_rows(tmp_pair.num1, i, matrix2);   // The other matrix too.
-
-                //printf("Switching row %d with row %d.\n", tmp_pair.num1, i);    // Debug code.
-                //getchar();
-            }
-
-            if(tmp_pair.num2!=i)  // If the largest element is in another column
-            {               // switch the current column with that one.
-                tmp_pair = switch_columns(tmp_pair.num2, i, matrix1);
-                if(1!=matrix2.columns) // If its an identity, switch those columns too.
-                    switch_columns(tmp_pair.num2, i, matrix1);    // Note: Do I need this?
-
-                // Register the column switches in switches and switch_count.
-                if(0==switch_count)     // Store the first switch.
-                {
-                    switches = (pair *)calloc(1, sizeof(pair));
-                    switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
-                }
-                else                    // Store the rest.
-                {
-                    switches = (pair *)calloc((switch_count+1), sizeof(pair));
-                    switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
-                }
-
-                //printf("Switching column %d with column %d.\n", tmp_pair.num1, tmp_pair.num2);  // Debug code.
-                //getchar();
-            }
-
-            printf("\n\n\n");
-            printf("***\tTriangle after switching #%d\t***\n", i+1);
-            printf("***\tFirst Matrix\t***\n");
-            write_matrix_1d(matrix1, "stdout"); // Debug code.
-            printf("***\tSecond Matrix\t***\n");
-            write_matrix_1d(matrix2, "stdout");
-            printf("\n\n\n");
-            getchar();*/
-
             temp = get_value(j, i, matrix1);    // Set the multiplier.
 
             sub_row(j, i, matrix1, temp);       // Zero out matrix1 row.
@@ -419,14 +371,35 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
         }
     }
 
+    /*printf("\n\n\n");
+    printf("***\tMatrices before switching\t\t***\n");
+    printf("***\tFirst Matrix\t***\n");
+    write_matrix_1d(matrix1, "stdout"); // Debug code.
+    printf("***\tSecond Matrix\t***\n");
+    write_matrix_1d(matrix2, "stdout");
     printf("\n\n\n");
+    getchar();*/
+
+    //printf("Switched %d columns.\n", switch_count); // Debug code.
+
+    // If we have a system of linear equations, we need to switch back.
+    if((1==matrix2.columns)&&(switch_count))
+    {
+        for(i=switch_count-1;i>=0;i--)     // Start with the last switch, finish with the first.
+        {
+            //printf("Switching row %d with row %d.\n", switches[i].num1, switches[i].num2);  // Debug code.
+            switch_rows(switches[i].num1, switches[i].num2, matrix2);
+        }
+    }
+
+    /*printf("\n\n\n");
     printf("***\tMatrices after eliminator\t\t***\n");
     printf("***\tFirst Matrix\t***\n");
     write_matrix_1d(matrix1, "stdout"); // Debug code.
     printf("***\tSecond Matrix\t***\n");
     write_matrix_1d(matrix2, "stdout");
     printf("\n\n\n");
-    getchar();
+    getchar();*/
 
     return 1;
 }

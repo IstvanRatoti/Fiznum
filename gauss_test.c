@@ -457,27 +457,31 @@ int sub_row_test(void)
     return success;
 }
 
-void test_functions(void)
+int test_functions(void)
 {
+    int success = 1;
+
     fprintf(stderr, "******\t\tTesting functions...\t\t******\n\n");
 
-    if(get_largest_in_row_test())
+    if(success&=get_largest_in_row_test())
         fprintf(stderr, "***\tFunction get_largest_in_row is OK.\n");
 
-    if(get_largest_test())
+    if(success&=get_largest_test())
         fprintf(stderr, "***\tFunction get_largest is OK.\n");
 
-    if(switch_rows_test())
+    if(success&=switch_rows_test())
         fprintf(stderr, "***\tFunction switch_rows is OK.\n");
 
-    if(switch_columns_test())
+    if(success&=switch_columns_test())
         fprintf(stderr, "***\tFunction switch_columns is OK.\n");
 
-    if(mult_row_test())
+    if(success&=mult_row_test())
         fprintf(stderr, "***\tFunction mult_row is OK.\n");
 
-    if(sub_row_test())
+    if(success&=sub_row_test())
         fprintf(stderr, "***\tFunction sub_row is OK.\n");
 
     fprintf(stderr, "\n******\t\tFunction tests complete.\t******\n\n");
+
+    return success;
 }
