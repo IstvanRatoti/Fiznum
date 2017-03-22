@@ -66,7 +66,7 @@ pair get_largest(matrix_1d matrix, int start)
         }
 
         // This code checks for a singular matrix.
-        if((i == start)&&(fabs(largest) < 1.0e-100))                                                    // Test for singularity!                            Done
+        if((i == start)&&(fabs(largest) < 1.0e-50))                                                    // Test for singularity!                            Done
         {
             //fprintf(stderr, "The matrix is singular!\n");     Move up to the eliminator.
             pos.num1 = -1;
@@ -76,7 +76,7 @@ pair get_largest(matrix_1d matrix, int start)
     }
 
     // Check for numerical singularity, and write a warning.
-    if(fabs(largest) < 1e-10)                                                                           // Test for numerical singularity? How?
+    if((fabs(largest) < 1e-10)||(fabs(largest) > 1e10))                                                                           // Test for numerical singularity? How?
         fprintf(stderr, "Warning! Possible numerical singularity!\n");
 
     return pos;
@@ -242,11 +242,15 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
             //printf("Largest absolute value in normalization: %e", temp);    // Debug code.
             //getchar();
 
-            if(fabs(temp) < 1e-308)     // Check for singularity in normalization.
+            if(fabs(temp) < 1e-50)     // Check for singularity in normalization.
             {
                 fprintf(stderr, "The matrix is singular!\n");
                 return 0;
             }
+
+            // Check for numerical singularity, and write a warning.
+            if((fabs(temp) < 1e-10)||(fabs(temp) > 1e10))                                                                           // Test for numerical singularity? How?
+                fprintf(stderr, "Warning! Possible numerical singularity!\n");
 
             temp = 1.0 / temp;
 
@@ -314,7 +318,7 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
             }
             else                    // Store the rest.
             {
-                switches = (pair *)calloc((switch_count+1), sizeof(pair));
+                switches = (pair *)realloc(switches, (switch_count+1)*sizeof(pair));
                 switches[switch_count++] = tmp_pair;    // Increment switch_count and store the pair.
             }
 
@@ -380,16 +384,13 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
     printf("\n\n\n");
     getchar();*/
 
-    //printf("Switched %d columns.\n", switch_count); // Debug code.
+    printf("Switched %d columns.\n", switch_count); // Debug code.
 
-    // If we have a system of linear equations, we need to switch back.
-    if((1==matrix2.columns)&&(switch_count))
+    // Switch for the column switches.
+    for(i=switch_count-1;i>=0;i--)     // Start with the last switch, finish with the first.
     {
-        for(i=switch_count-1;i>=0;i--)     // Start with the last switch, finish with the first.
-        {
-            //printf("Switching row %d with row %d.\n", switches[i].num1, switches[i].num2);  // Debug code.
-            switch_rows(switches[i].num1, switches[i].num2, matrix2);
-        }
+        //printf("Switching row %d with row %d.\n", switches[i].num1, switches[i].num2);  // Debug code.
+        switch_rows(switches[i].num1, switches[i].num2, matrix2);
     }
 
     /*printf("\n\n\n");

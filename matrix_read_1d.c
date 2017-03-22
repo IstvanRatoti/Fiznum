@@ -192,3 +192,52 @@ matrix_1d create_identity(int dimensions)
 
     return result;
 }
+
+matrix_1d mult_matrices(matrix_1d mat1, matrix_1d mat2)
+{
+	matrix_1d result;
+	int i, j, k;
+	double temp = 0;
+	double t1, t2;
+
+	if(mat1.columns != mat2.rows)   // Checks if the two matrices are compatible.
+	{
+		fprintf(stderr, "The two matrices are not compatible! They cannot be multiplied.\n");
+		result.columns = -1;    // Value for error handling.
+		return result;
+	}
+
+	result.rows = mat1.rows;
+	result.columns = mat2.columns;  // Need to initialize these values, because we use them.
+	result.values = (double *)calloc(mat1.rows*mat2.columns, sizeof(double));
+
+	//printf("Loop boundaries:\nOuter: %d\tMiddle: %d\tInner: %d\n", mat1.rows, mat2.columns, mat1.columns);    Debug code
+
+	for(i=0;i<mat1.rows;i++)
+	{
+		for(j=0;j<mat2.columns;j++)
+		{
+			for(k=0;k<mat1.columns;k++)
+			{
+				t1 = get_value(i, k, mat1);
+				t2 = get_value(k, j, mat2);
+
+				//printf("Multiplying %g (Row: %d Column: %d) with\n", t1, i, k);
+				//printf("with %g (Row: %d Column: %d)\n", t2, k, j);   Debug code
+                //getchar();
+
+				temp += t1*t2;
+            }
+
+            //printf("The value of element at row %d column %d: %g", i, j, temp);   Debug code
+            //getchar();
+
+            set_value(i, j, result, temp);
+            temp = 0;
+		}
+	}
+
+	//printf("Out of the loop!\n"); Debug code
+
+	return result;
+}

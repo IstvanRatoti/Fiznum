@@ -3,6 +3,7 @@
 
 #include "gauss_test.h"
 #include "gauss_functions.h"
+//#include "svd_inverse.h"
 
 void usage(char * prog_name);
 
@@ -10,7 +11,7 @@ int run_func_tests(void);
 
 /*
 *   The program can receive 1 or 2 arguments.
-*   If it receives 1 argument, it will Either invert a matrix, or run the tests
+*   If it receives 1 argument, it will either invert a matrix, or run the tests
 *   with the "TEST" keyword (you will need the test files to run the tests).
 *   If it receives 2 arguments, it will solve a system of linear equations. The
 *   first matrix must be the coefficients of the variables, the second matrix
@@ -28,21 +29,30 @@ int main(int argc, char *argv[])
         {
             matrix_1d matrix1 = read_matrix_1d(argv[1]);
             matrix_1d matrix2 = create_identity(matrix1.rows);
+            //matrix_1d inverse;    // If lapacke is included.
 
             printf("***\t\tThe matrix to be inverted:\t\t***\n");
             write_matrix_1d(matrix1, "stdout");     // Debug code.
+
+            printf("\nCalculating inverse with Gauss-Jordan Eliminator:\n");
 
             if(!gauss_eliminator(matrix1, matrix2))
             {
                 fprintf(stderr, "The eliminator encountered an error!\n");
 
-                return 1;
+                return 1;   // If lapacke is not included.
             }
             else
             {
                 printf("***\t\tThe inverse of the matrix:\t\t***\n");
                 write_matrix_1d(matrix2, "stdout");
             }
+
+            //printf("\nCalculating inverse with SVD:\n");
+
+            //matrix1 = read_matrix_1d(argv[1]);
+            //inverse = calculate_inverse(matrix1);     // Uncomment to use SVD.
+            //write_matrix_1d(inverse, "stdout");
         }
     }
     else if(3==argc)    // Compute solution of a system of linear equations.
@@ -65,7 +75,6 @@ int main(int argc, char *argv[])
             printf("***\t\tThe result::\t\t***\n");
             write_matrix_1d(matrix2, "stdout");
         }
-
     }
     else    // Wrong number of arguments.
     {
