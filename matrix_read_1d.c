@@ -51,7 +51,7 @@ void write_matrix_1d(matrix_1d matr, char * file_name)
 		for(j=0;j<matr.columns;j++)
 		{
 		    value = get_value(i, j, matr);
-			fprintf(file, "%5.20f\t", value);
+			fprintf(file, "%5.6lf\t", value);
 
 			/*if((j+1)==matr.columns)
 			{
