@@ -384,7 +384,7 @@ int gauss_eliminator(matrix_1d matrix1, matrix_1d matrix2)
     printf("\n\n\n");
     getchar();*/
 
-    printf("Switched %d columns.\n", switch_count); // Debug code.
+    //printf("Switched %d columns.\n", switch_count); // Debug code.
 
     // Switch for the column switches.
     for(i=switch_count-1;i>=0;i--)     // Start with the last switch, finish with the first.

@@ -1,0 +1,7 @@
+linear fit: f(x) = a*x + b
+
+Gausssian fit data:	a = 3.012 +/- 0.002
+					b = -16.61 +/- 0.02
+					
+SVD fit data:	a = 3.04 +/- 0.04
+				b = -18.4 +/- 0.3

@@ -1,9 +1,10 @@
 #include<stdio.h>
 #include<string.h>
+#include<time.h>
 
-#include "gauss_test.h"
+//#include "gauss_test.h"
 #include "gauss_functions.h"
-//#include "svd_inverse.h"
+#include "svd_inverse.h"
 
 void usage(char * prog_name);
 
@@ -19,22 +20,27 @@ int run_func_tests(void);
 */
 int main(int argc, char *argv[])
 {
+    clock_t start, finish;
+    double runtime;
+
     if(2==argc) // If one argument is given.
     {
         if(!strcmp("TEST", argv[1])) // Run tests.
         {
-            return run_func_tests();
+            //return run_func_tests();
         }
         else    // Compute inverse.
         {
             matrix_1d matrix1 = read_matrix_1d(argv[1]);
             matrix_1d matrix2 = create_identity(matrix1.rows);
-            //matrix_1d inverse;    // If lapacke is included.
+            matrix_1d inverse;    // If lapacke is included.
 
             printf("***\t\tThe matrix to be inverted:\t\t***\n");
-            write_matrix_1d(matrix1, "stdout");     // Debug code.
+            //write_matrix_1d(matrix1, "stdout");
 
             printf("\nCalculating inverse with Gauss-Jordan Eliminator:\n");
+
+            start = (long )clock();
 
             if(!gauss_eliminator(matrix1, matrix2))
             {
@@ -44,14 +50,19 @@ int main(int argc, char *argv[])
             }
             else
             {
-                printf("***\t\tThe inverse of the matrix:\t\t***\n");
-                write_matrix_1d(matrix2, "stdout");
+                finish = (long )clock();        // Calculate runtime.
+                runtime = ((double )finish-start)/CLOCKS_PER_SEC;
+                printf("Runtime: %lf seconds.\n", runtime);
+                //printf("***\t\tThe inverse of the matrix:\t\t***\n");
+                //write_matrix_1d(matrix2, "stdout");
             }
 
-            //printf("\nCalculating inverse with SVD:\n");
+            printf("\nCalculating inverse with SVD:\n");
 
-            //matrix1 = read_matrix_1d(argv[1]);
-            //inverse = calculate_inverse(matrix1);     // Uncomment to use SVD.
+            matrix1 = read_matrix_1d(argv[1]);
+
+            inverse = calculate_inverse(matrix1);     // Uncomment to use SVD.
+
             //write_matrix_1d(inverse, "stdout");
         }
     }
@@ -96,11 +107,11 @@ void usage(char * progname)
 }
 
 // Run tests on the functions. Can be expanded on demand.
-int run_func_tests(void)
+/*int run_func_tests(void)
 {
     int success = 0;
 
     success &= test_functions();
 
     return success;
-}
+}*/

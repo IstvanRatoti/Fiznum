@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<time.h>
 
 #include "svd_inverse.h"
 #include "lapacke.h"
@@ -69,6 +70,9 @@ matrix_1d invert_diag(matrix_1d matrix)
 */
 matrix_1d calculate_inverse(matrix_1d matrix)
 {
+    clock_t start, finish;
+    double runtime;
+
     matrix_1d result;   // Initialize the result matrix.
     result.values = (double *)calloc(matrix.rows*matrix.columns, sizeof(double));
     result.columns = matrix.columns;
@@ -95,8 +99,12 @@ matrix_1d calculate_inverse(matrix_1d matrix)
 
     double * superb = (double *)calloc(matrix.columns-1, sizeof(double));   // Got the foggiest, what this is...
 
+    start = (long )clock();
     info = LAPACKE_dgesvd(LAPACK_ROW_MAJOR, 'A', 'A', m, n, matrix.values, lda, singular.values,
                            left.values, ldu, right.values, ldvt, superb);
+    finish = (long )clock();        // Calculate runtime.
+    runtime = ((double )finish-start)/CLOCKS_PER_SEC;
+    printf("Runtime: %lf seconds.\n", runtime);
 
     if(info>0)  // Return value for error checking and stuff? prolly...
     {
@@ -105,10 +113,10 @@ matrix_1d calculate_inverse(matrix_1d matrix)
         return result;
     }
 
-    /*write_matrix_1d(left, "stdout");
-    write_matrix_1d(right, "stdout");     // Debug code
-    write_matrix_1d(singular, "stdout");
-    getchar();*/
+    //write_matrix_1d(left, "stdout");
+    //write_matrix_1d(right, "stdout");     // Debug code
+    //write_matrix_1d(singular, "stdout");
+    //getchar();
 
     left = transpose_matrix(left);      // Transpose the left hand matrix.
     right = transpose_matrix(right);    // And the right hand.
