@@ -23,6 +23,13 @@ matrix_1d create_powers(int variables, int order);
 /*
 *   Creates the matrix used to calculate the 2 "sides of the linear
 *   equation. The order determines the columns of the matrix.
+*   (All the combinations in this one.)
+*/
+matrix_1d create_poly_matrix_full(matrix_1d variables, int order);
+
+/*
+*   Creates the matrix used to calculate the 2 "sides of the linear
+*   equation. The order determines the columns of the matrix.
 *   (ATM, only "lonely variable"-s and their powers)
 */
 matrix_1d create_poly_matrix(matrix_1d variables, int order);

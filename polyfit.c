@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
     if(!row_not_present(test, test_row))
         printf("It's Working!\n");*/
 
-    matrix_1d powers = create_powers(2,3);
+    matrix_1d powers = create_powers(1,3);
     write_matrix_1d(powers, "stdout");
 
     return 0;

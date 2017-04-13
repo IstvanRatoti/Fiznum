@@ -101,6 +101,45 @@ matrix_1d create_powers(int variables, int order)
 /*
 *   Creates the matrix used to calculate the 2 "sides of the linear
 *   equation. The order determines the columns of the matrix.
+*   (All the combinations in this one.)
+*/
+matrix_1d create_poly_matrix_full(matrix_1d variables, int order)
+{
+    int i;
+
+    matrix_1d order_matrix = create_powers(variables.rows, order);
+
+    matrix_1d result;
+    result.columns = 1 + variables.columns*order_matrix.rows;
+    result.rows = variables.rows;
+    result.values = (double *)calloc(result.columns*result.rows, sizeof(double));
+
+    //printf("Allocation complete.\nColumns: %d\tRows: %d\n", result.columns, result.rows);
+    //getchar();    // Debug code.
+
+    for(i=0;i<result.rows;i++)
+    {
+        for(j=0;j<result.columns;j++)
+        {
+            if(0==j)    // The first values are the constants.
+            {
+                set_value(i, j, result, 1);
+                //printf("Constant value set.\n");
+                //getchar();      // Debug code.
+            }
+            else
+            {
+
+            }
+        }
+    }
+
+    return result;
+}
+
+/*
+*   Creates the matrix used to calculate the 2 "sides of the linear
+*   equation. The order determines the columns of the matrix.
 *   (ATM, only "lonely variable"-s and their powers)
 */
 matrix_1d create_poly_matrix(matrix_1d variables, int order)
