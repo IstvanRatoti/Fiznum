@@ -14,6 +14,37 @@ double get_value(int row, int column, matrix_1d matr)
     return matr.values[row*matr.columns + column];
 }
 
+/*
+*   Checks if the given row is not in the matrix.
+*/
+int row_not_present(matrix_1d matrix, int * row)
+{
+    int i, j=0, val;
+
+    if(0==matrix.rows)  // If the matrix is empty, the row cant be present. (DUH)
+        return 1;
+
+    for(i=0;i<matrix.rows;i++)
+    {
+        while(j<matrix.columns)
+        {
+            // Cast the double to an integer.
+            val = (int )get_value(i, j, matrix);
+
+            if(row[j]!=val)
+            {
+                break;  // If the value is not present, the row isnt either.
+            }
+            j++;
+        }
+
+        if(matrix.columns==j)   // If we went through the inner loop, we
+            return 0;           // found a row that is the same.
+    }
+
+    return 1;
+}
+
 /* Basic Write matrix function. Can write to stdout or a specified file. No return value. */
 void write_matrix_1d(matrix_1d matr, char * file_name)
 {

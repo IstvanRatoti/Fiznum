@@ -10,6 +10,17 @@
 matrix_1d transpose_matrix(matrix_1d matrix);
 
 /*
+*   This function helps to calculate all the different powers.
+*/
+matrix_1d set_powers(matrix_1d * result, matrix_1d prev_powers, int variables);
+
+/*
+*   Creates a matrix containing the power of each variable for the
+*   given coefficient.
+*/
+matrix_1d create_powers(int variables, int order);
+
+/*
 *   Creates the matrix used to calculate the 2 "sides of the linear
 *   equation. The order determines the columns of the matrix.
 *   (ATM, only "lonely variable"-s and their powers)

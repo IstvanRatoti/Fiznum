@@ -42,6 +42,25 @@ int main(int argc, char *argv[])
     printf("Parameters of the fit:\n");
     write_matrix_1d(result, "stdout");
 
+    /*int test_row[3]={1,1,1};
+    matrix_1d test;
+    test.columns = 3;
+    test.rows = 2;
+    test.values = (double *)calloc(3, sizeof(double));
+
+    set_value(0, 0,test, 1);
+    set_value(0, 1,test, 1);
+    set_value(0, 2,test, 1);
+    set_value(1, 0,test, 2);
+    set_value(1, 1,test, 2);
+    set_value(1, 2,test, 3);
+
+    if(!row_not_present(test, test_row))
+        printf("It's Working!\n");*/
+
+    matrix_1d powers = create_powers(2,3);
+    write_matrix_1d(powers, "stdout");
+
     return 0;
 }
 

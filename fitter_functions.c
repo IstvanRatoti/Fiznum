@@ -27,6 +27,78 @@ matrix_1d transpose_matrix(matrix_1d matrix)
 }
 
 /*
+*   This function helps to calculate all the different powers.
+*/
+matrix_1d set_powers(matrix_1d * result, matrix_1d prev_powers, int variables)
+{
+    int i, j, k;
+    int * new_row = (int *)calloc(variables, sizeof(int));
+
+    matrix_1d next_powers;
+    next_powers.columns = variables;    // Initialize the next_powers matrix.
+    next_powers.rows = 0;
+    next_powers.values = (double *)malloc(sizeof(double));
+
+
+    if(0==prev_powers.columns)                     // If the prev_powers matrix is not
+        prev_powers = create_identity(variables);  // initialized, create an identity for it.
+
+    for(i=0;i<prev_powers.rows;i++)
+    {
+        for(j=0;j<variables;j++)
+        {
+            for(k=0;k<variables;k++)    // Create the new row to be added.
+            {
+                if(k==j)    // The k-th value needs to be incremented.
+                    new_row[k] =(int )get_value(i, k, prev_powers) + 1;
+                else        // The others dont.
+                    new_row[k] = (int )get_value(i, k, prev_powers);
+            }
+
+            // If this row is not in the matrices yet, add it.
+            if(row_not_present(next_powers, new_row))
+            {
+                next_powers.rows++;
+                next_powers.values = (double *)realloc(next_powers.values,  // Reallocate for the next_powers matrix.
+                                                       next_powers.columns*next_powers.rows*sizeof(double));
+                result->rows++;
+                result->values = (double *)realloc(result->values,          // Reallocate for the result matrix.
+                                                   result->columns*result->rows*sizeof(double));
+
+                for(k=0;k<variables;k++)
+                {
+                    set_value((next_powers.rows-1), k, next_powers, new_row[k]);    // Set the new elements of next_powers...
+                    set_value((result->rows-1), k, *result, new_row[k]);            // and result too.
+                }
+            }
+        }
+    }
+
+    free(new_row);
+
+    return next_powers;
+}
+
+/*
+*   Creates a matrix containing the power of each variable for the
+*   given coefficient.
+*/
+matrix_1d create_powers(int variables, int order)
+{
+    int i;
+    matrix_1d result = create_identity(variables);
+
+
+    matrix_1d prev_powers;
+    prev_powers.columns = 0;    // This matrix is not initialized first.
+
+    for(i=order-1;i>0;i--)
+        prev_powers = set_powers(&result, prev_powers, variables);
+
+    return result;
+}
+
+/*
 *   Creates the matrix used to calculate the 2 "sides of the linear
 *   equation. The order determines the columns of the matrix.
 *   (ATM, only "lonely variable"-s and their powers)
